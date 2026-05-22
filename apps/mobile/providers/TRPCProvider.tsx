@@ -1,0 +1,30 @@
+import React, { useState, ReactNode } from "react";
+import { QueryClientProvider } from "@tanstack/react-query";
+import {
+  TRPCProvider as GeneratedTRPCProvider,
+  createQueryClient,
+  createTRPCClient,
+} from "../utils/trpc";
+import { type TRPCClient } from "@trpc/client";
+import { type AppRouter } from "@repo/trpc";
+import { getAccessToken } from "../lib/api-client";
+
+interface TRPCProviderProps {
+  children: ReactNode;
+}
+
+export function TRPCProvider({ children }: TRPCProviderProps) {
+  const [queryClient] = useState(() => createQueryClient());
+  const [trpcClient] = useState(() => createTRPCClient(getAccessToken));
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GeneratedTRPCProvider
+        trpcClient={trpcClient as TRPCClient<AppRouter>}
+        queryClient={queryClient}
+      >
+        {children}
+      </GeneratedTRPCProvider>
+    </QueryClientProvider>
+  );
+}

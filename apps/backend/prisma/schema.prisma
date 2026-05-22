@@ -1,0 +1,80 @@
+// Prisma schema migrated from packages/db TypeORM entities.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ItemStatus {
+  pending
+  active
+  completed
+  inactive
+}
+
+enum DetailLevel {
+  basic
+  intermediate
+  advanced
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  username     String   @unique @db.VarChar(50)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  firstName    String?  @map("first_name") @db.VarChar(100)
+  lastName     String?  @map("last_name") @db.VarChar(100)
+  imageUrl     String?  @map("image_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  userItems UserItem[]
+
+  @@map("users")
+}
+
+model Item {
+  id                  String     @id @default(uuid()) @db.Uuid
+  status              ItemStatus @default(pending)
+  exampleNumericField Int        @default(0) @map("example_numeric_field")
+  exampleStringField  String?    @map("example_string_field") @db.VarChar
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+
+  userItems UserItem[]
+
+  @@map("items")
+}
+
+model UserItem {
+  id                String   @id @default(uuid()) @db.Uuid
+  itemId            String   @map("item_id") @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  userSpecificValue String?  @map("user_specific_value") @db.VarChar
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_items")
+}
+
+model ItemDetail {
+  id          String      @id @default(uuid()) @db.Uuid
+  description String      @db.Text
+  tags        String[]
+  detailValue Int?        @map("detail_value")
+  level       DetailLevel @default(intermediate)
+  category    String?     @db.VarChar
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("item_details")
+}
