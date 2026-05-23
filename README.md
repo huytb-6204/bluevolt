@@ -166,6 +166,40 @@ docker compose up -d --force-recreate  # Recreate nếu port không bind đúng
 
 ---
 
+## 🌿 Branching strategy
+
+Dự án dùng **GitHub Flow giản lược** với 2 nhánh dài hạn:
+
+| Nhánh | Vai trò |
+|---|---|
+| `main` | Production-ready. Chỉ merge từ `develop` qua PR. **Không push trực tiếp.** |
+| `develop` | Integration branch — nơi merge các feature/fix hàng ngày. |
+
+### Nhánh tạm
+- `feature/<slug>` — tính năng mới (vd: `feature/profile-edit`)
+- `fix/<slug>` — bug fix (vd: `fix/refresh-token-race`)
+- `chore/<slug>` — refactor / config / docs (vd: `chore/upgrade-next`)
+- `hotfix/<slug>` — fix khẩn cấp cắt thẳng từ `main`, merge cả `main` lẫn `develop`
+
+### Flow
+```
+feature/x ──► develop ──► main (release)
+                  ▲
+fix/y ────────────┘
+
+hotfix/z ──► main + develop (cherry-pick / merge ngược)
+```
+
+### Quy tắc
+- 1 PR = 1 chủ đề, đặt title theo Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`)
+- PR vào `main` cần ít nhất **1 review** + CI xanh
+- Squash merge để giữ history sạch
+- Sau khi merge → xoá nhánh feature
+
+> Bật **Branch protection** trên GitHub cho `main` và `develop`: require PR, require status checks, no force push.
+
+---
+
 ## 📜 License
 
 MIT © Bluevolt
