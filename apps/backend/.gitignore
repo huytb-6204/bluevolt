@@ -1,4 +1,6 @@
 src/@generated/
 src/generated/
 
-!.env
+# Local env (root .gitignore already covers .env, but keep explicit here)
+.env
+.env.local

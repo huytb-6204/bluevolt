@@ -22,6 +22,7 @@ export function useAuth() {
 
 // Redirect về /sign-in nếu chưa đăng nhập
 export function useRequireAuth() {
+  const user = useAuthStore((s) => s.user);
   const isSignedIn = useAuthStore((s) => s.isSignedIn);
   const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
@@ -32,5 +33,17 @@ export function useRequireAuth() {
     }
   }, [isSignedIn, isLoading, router]);
 
-  return useAuthStore();
+  return { user, isSignedIn, isLoading };
+}
+
+// Redirect về "/" nếu đã đăng nhập (dùng cho /sign-in, /sign-up)
+export function useRedirectIfSignedIn(redirectTo: string = "/") {
+  const isSignedIn = useAuthStore((s) => s.isSignedIn);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace(redirectTo);
+    }
+  }, [isSignedIn, redirectTo, router]);
 }

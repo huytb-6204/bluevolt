@@ -4,6 +4,7 @@ import { type JSX, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth-store";
+import { useRedirectIfSignedIn } from "@/hooks/use-auth";
 import { Button } from "@repo/ui/components/base/button";
 import { Input } from "@repo/ui/components/base/input";
 import { Label } from "@repo/ui/components/base/label";
@@ -25,6 +26,7 @@ const passwordRules = [
 ];
 
 export default function SignUpPage(): JSX.Element {
+  useRedirectIfSignedIn("/");
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const isLoading = useAuthStore((s) => s.isLoading);

@@ -34,6 +34,9 @@ yarn-error.log*
 # Turbo
 .turbo
 
+# Claude Code
+.claude/
+
 # Vercel
 .vercel
 

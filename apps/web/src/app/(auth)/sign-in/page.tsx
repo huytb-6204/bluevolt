@@ -4,6 +4,7 @@ import { type JSX, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth-store";
+import { useRedirectIfSignedIn } from "@/hooks/use-auth";
 import { Button } from "@repo/ui/components/base/button";
 import { Input } from "@repo/ui/components/base/input";
 import { Label } from "@repo/ui/components/base/label";
@@ -19,6 +20,7 @@ import { Alert, AlertDescription } from "@repo/ui/components/base/alert";
 import { Loader2, Zap, AlertCircle } from "lucide-react";
 
 export default function SignInPage(): JSX.Element {
+  useRedirectIfSignedIn("/");
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const isLoading = useAuthStore((s) => s.isLoading);
