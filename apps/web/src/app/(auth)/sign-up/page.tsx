@@ -68,34 +68,38 @@ export default function SignUpPage(): JSX.Element {
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? (err instanceof Error ? err.message : "Đăng ký thất bại.");
+          ?.message ??
+        (err instanceof Error ? err.message : "Đăng ký thất bại.");
       setError(Array.isArray(msg) ? msg[0] : msg);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4 overflow-hidden">
+      {/* Decorative orbs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-200/40 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-200/40 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
-      <div className="w-full max-w-md relative z-10">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center">
+      <div className="w-full max-w-md relative z-10 py-8">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-2 mb-8 group"
+        >
+          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
             <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-2xl font-bold text-white tracking-tight">
+          <span className="text-2xl font-bold text-slate-900 tracking-tight">
             BlueVolt
           </span>
-        </div>
+        </Link>
 
-        <Card className="border-slate-800 bg-slate-900/80 backdrop-blur-sm shadow-2xl">
+        <Card className="border-slate-200 bg-white shadow-xl">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-white">
+            <CardTitle className="text-2xl font-bold text-slate-900">
               Tạo tài khoản
             </CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardDescription className="text-slate-500">
               Đăng ký để bắt đầu sử dụng BlueVolt.
             </CardDescription>
           </CardHeader>
@@ -105,7 +109,7 @@ export default function SignUpPage(): JSX.Element {
               {error && (
                 <Alert
                   variant="destructive"
-                  className="bg-red-950/50 border-red-800 text-red-300"
+                  className="bg-red-50 border-red-200 text-red-700"
                 >
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
@@ -113,7 +117,7 @@ export default function SignUpPage(): JSX.Element {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300 text-sm">
+                <Label htmlFor="email" className="text-slate-700 text-sm">
                   Email
                 </Label>
                 <Input
@@ -125,12 +129,12 @@ export default function SignUpPage(): JSX.Element {
                   onChange={handleChange}
                   required
                   autoComplete="email"
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20 h-11"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20 h-11"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-slate-300 text-sm">
+                <Label htmlFor="username" className="text-slate-700 text-sm">
                   Tên người dùng
                 </Label>
                 <Input
@@ -143,12 +147,12 @@ export default function SignUpPage(): JSX.Element {
                   required
                   minLength={3}
                   autoComplete="username"
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20 h-11"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20 h-11"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300 text-sm">
+                <Label htmlFor="password" className="text-slate-700 text-sm">
                   Mật khẩu
                 </Label>
                 <Input
@@ -161,7 +165,7 @@ export default function SignUpPage(): JSX.Element {
                   onFocus={() => setShowPasswordHint(true)}
                   required
                   autoComplete="new-password"
-                  className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20 h-11"
+                  className="bg-white border-slate-300 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20 h-11"
                 />
                 {showPasswordHint && form.password.length > 0 && (
                   <div className="flex flex-col gap-1 pt-1">
@@ -171,7 +175,7 @@ export default function SignUpPage(): JSX.Element {
                         <div
                           key={rule.label}
                           className={`flex items-center gap-1.5 text-xs transition-colors ${
-                            passed ? "text-green-400" : "text-slate-500"
+                            passed ? "text-emerald-600" : "text-slate-400"
                           }`}
                         >
                           <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
@@ -186,7 +190,7 @@ export default function SignUpPage(): JSX.Element {
               <div className="space-y-2">
                 <Label
                   htmlFor="confirmPassword"
-                  className="text-slate-300 text-sm"
+                  className="text-slate-700 text-sm"
                 >
                   Xác nhận mật khẩu
                 </Label>
@@ -199,12 +203,12 @@ export default function SignUpPage(): JSX.Element {
                   onChange={handleChange}
                   required
                   autoComplete="new-password"
-                  className={`bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 h-11 focus:ring-blue-500/20 transition-colors ${
+                  className={`bg-white text-slate-900 placeholder:text-slate-400 h-11 focus:ring-blue-500/20 transition-colors ${
                     form.confirmPassword.length > 0
                       ? form.confirmPassword === form.password
-                        ? "border-green-600 focus:border-green-500"
-                        : "border-red-700 focus:border-red-500"
-                      : "focus:border-blue-500"
+                        ? "border-emerald-500 focus:border-emerald-600"
+                        : "border-red-400 focus:border-red-500"
+                      : "border-slate-300 focus:border-blue-500"
                   }`}
                 />
               </div>
@@ -226,11 +230,11 @@ export default function SignUpPage(): JSX.Element {
                 )}
               </Button>
 
-              <p className="text-sm text-slate-400 text-center">
+              <p className="text-sm text-slate-500 text-center">
                 Đã có tài khoản?{" "}
                 <Link
                   href="/sign-in"
-                  className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                 >
                   Đăng nhập
                 </Link>

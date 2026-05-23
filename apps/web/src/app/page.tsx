@@ -1,603 +1,601 @@
 "use client";
 
-import React, { type JSX } from "react";
+import { type JSX } from "react";
 import Link from "next/link";
+import { Button } from "@repo/ui/components/base/button";
+import { Card, CardContent } from "@repo/ui/components/base/card";
+import { Badge } from "@repo/ui/components/base/badge";
+import { Input } from "@repo/ui/components/base/input";
 import {
   Zap,
   MapPin,
-  Clock,
-  Shield,
-  Star,
-  ChevronRight,
-  Smartphone,
-  CheckCircle2,
-  ArrowRight,
+  Calendar as CalendarIcon,
+  Search,
   Battery,
+  Gauge,
+  Bike,
+  ShieldCheck,
+  Leaf,
+  Clock,
+  CreditCard,
   Headphones,
+  ArrowRight,
+  Star,
+  Sparkles,
+  ChevronRight,
+  Wind,
 } from "lucide-react";
 
-const STATS = [
-  { value: "500+", label: "Xe điện chất lượng" },
-  { value: "50K+", label: "Chuyến thành công" },
-  { value: "20+", label: "Tỉnh thành" },
-  { value: "4.9★", label: "Đánh giá trung bình" },
-];
-
-const VEHICLES = [
+const featuredVehicles = [
   {
+    id: "1",
     name: "VinFast Klara S",
-    price: "150.000",
-    range: "110 km",
-    speed: "60 km/h",
-    badge: "Phổ biến nhất",
-    badgeColor: "bg-[#F5A623] text-[#020617]",
-    gradient: "from-[#1B3A8C] to-[#0EA5E9]",
-    features: ["Tự động", "Không tiếng ồn", "Cốp rộng"],
+    type: "Xe máy điện",
+    pricePerDay: 180000,
+    range: 120,
+    maxSpeed: 60,
+    rating: 4.9,
+    badge: "Phổ biến",
   },
   {
-    name: "Dat Bike Weaver",
-    price: "200.000",
-    range: "130 km",
-    speed: "75 km/h",
-    badge: "Mạnh nhất",
-    badgeColor: "bg-[#0EA5E9] text-white",
-    gradient: "from-[#0EA5E9] to-[#1B3A8C]",
-    features: ["Tốc độ cao", "Pin bền", "Thiết kế sport"],
+    id: "2",
+    name: "Dat Bike Weaver 200",
+    type: "Xe máy điện cao cấp",
+    pricePerDay: 250000,
+    range: 200,
+    maxSpeed: 80,
+    rating: 4.8,
+    badge: "Premium",
   },
   {
-    name: "Yadea G5",
-    price: "150.000",
-    range: "100 km",
-    speed: "55 km/h",
+    id: "3",
+    name: "VinFast Feliz S",
+    type: "Xe ga điện",
+    pricePerDay: 150000,
+    range: 90,
+    maxSpeed: 49,
+    rating: 4.7,
     badge: "Tiết kiệm",
-    badgeColor: "bg-emerald-500 text-white",
-    gradient: "from-[#1E293B] to-[#1B3A8C]",
-    features: ["Kinh tế", "Nhẹ nhàng", "Dễ điều khiển"],
   },
 ];
 
-const STEPS = [
+const steps = [
   {
-    step: "01",
-    title: "Chọn xe & địa điểm",
-    desc: "Chọn loại xe và điểm giao nhận phù hợp với lịch trình của bạn.",
-    icon: <MapPin className="w-6 h-6" />,
+    icon: Search,
+    title: "Tìm xe phù hợp",
+    desc: "Chọn dòng xe, địa điểm và thời gian thuê. Đa dạng xe máy điện cao cấp.",
   },
   {
-    step: "02",
-    title: "Đặt xe trong 60 giây",
-    desc: "Điền thông tin, chọn thời gian thuê và thanh toán an toàn qua app.",
-    icon: <Clock className="w-6 h-6" />,
+    icon: CalendarIcon,
+    title: "Đặt xe online",
+    desc: "Đặt xe trong vài giây với thanh toán an toàn. Xác nhận tức thì qua email và SMS.",
   },
   {
-    step: "03",
-    title: "Nhận xe tận nơi",
-    desc: "Xe được giao đến khách sạn, sân bay hoặc bất kỳ địa chỉ bạn chọn.",
-    icon: <CheckCircle2 className="w-6 h-6" />,
+    icon: Bike,
+    title: "Nhận xe & khởi hành",
+    desc: "Lấy xe tại điểm đã chọn hoặc giao tận nơi. Bắt đầu chuyến đi xanh của bạn.",
   },
 ];
 
-const FEATURES = [
+const features = [
   {
-    icon: <Clock className="w-7 h-7 text-[#F5A623]" />,
-    title: "Đặt nhanh 60 giây",
-    desc: "Quy trình đặt xe đơn giản, nhanh chóng chỉ trong vài thao tác trên ứng dụng.",
+    icon: Leaf,
+    title: "100% xanh",
+    desc: "Không khí thải, góp phần bảo vệ môi trường mỗi km bạn đi.",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
   },
   {
-    icon: <MapPin className="w-7 h-7 text-[#F5A623]" />,
-    title: "Giao xe tận nơi",
-    desc: "Chúng tôi giao xe đến khách sạn, sân bay hoặc bất kỳ địa chỉ bạn chỉ định.",
+    icon: Battery,
+    title: "Sạc nhanh khắp nơi",
+    desc: "Mạng lưới trạm sạc rộng khắp Việt Nam, sạc đầy 80% trong 30 phút.",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
   },
   {
-    icon: <Shield className="w-7 h-7 text-[#F5A623]" />,
+    icon: ShieldCheck,
     title: "Bảo hiểm toàn diện",
-    desc: "Mỗi chuyến đi đều được bảo hiểm đầy đủ, đảm bảo an tâm tuyệt đối cho bạn.",
+    desc: "Mọi xe đều được bảo hiểm 2 chiều, an tâm trên mọi hành trình.",
+    color: "text-indigo-600",
+    bg: "bg-indigo-50",
   },
   {
-    icon: <Headphones className="w-7 h-7 text-[#F5A623]" />,
+    icon: Clock,
+    title: "Đặt xe 24/7",
+    desc: "Hệ thống đặt xe hoạt động liên tục, sẵn sàng phục vụ mọi lúc.",
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+  },
+  {
+    icon: CreditCard,
+    title: "Giá minh bạch",
+    desc: "Không phí ẩn, không phụ thu bất ngờ. Báo giá rõ ràng trước khi đặt.",
+    color: "text-pink-600",
+    bg: "bg-pink-50",
+  },
+  {
+    icon: Headphones,
     title: "Hỗ trợ 24/7",
-    desc: "Đội ngũ hỗ trợ luôn sẵn sàng giải quyết mọi vấn đề bất kỳ lúc nào.",
-  },
-  {
-    icon: <Battery className="w-7 h-7 text-[#F5A623]" />,
-    title: "Pin dự phòng miễn phí",
-    desc: "Kèm theo bộ sạc dự phòng và hỗ trợ đổi pin tại điểm trả xe.",
-  },
-  {
-    icon: <Star className="w-7 h-7 text-[#F5A623]" />,
-    title: "Xe chất lượng cao",
-    desc: "100% xe điện mới, bảo dưỡng định kỳ, được kiểm định nghiêm ngặt trước khi giao.",
+    desc: "Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn mọi lúc.",
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
   },
 ];
 
-const REVIEWS = [
-  {
-    name: "Nguyễn Minh Tuấn",
-    location: "Hà Nội",
-    rating: 5,
-    text: "Dịch vụ xuất sắc! Xe giao đúng giờ, pin đầy, nhân viên hỗ trợ tận tình. Sẽ tiếp tục sử dụng trong những chuyến đi tiếp theo.",
-  },
-  {
-    name: "Trần Thị Lan",
-    location: "TP. Hồ Chí Minh",
-    rating: 5,
-    text: "BlueVolt thực sự thay đổi cách tôi di chuyển. Êm, xanh và tiết kiệm chi phí. Đặt xe chỉ mất 1 phút qua app!",
-  },
-  {
-    name: "Phạm Quốc Hưng",
-    location: "Đà Nẵng",
-    rating: 5,
-    text: "Đã thuê Dat Bike Weaver để khám phá Đà Nẵng 3 ngày. Mạnh, đẹp, không ồn. Trải nghiệm hoàn toàn khác biệt so với xe xăng.",
-  },
-];
+function formatPrice(value: number): string {
+  return new Intl.NumberFormat("vi-VN").format(value);
+}
 
-export default function LandingPage(): JSX.Element {
+export default function Home(): JSX.Element {
   return (
-    <div className="bg-[#020617] text-white overflow-x-hidden">
-      {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-        {/* Background gradient blobs */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#1B3A8C]/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#F5A623]/15 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0EA5E9]/10 rounded-full blur-3xl" />
-        </div>
+    <div className="bg-white text-slate-900 pt-16">
+      {/* ============ HERO ============ */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-200/30 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-200/30 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
-        {/* Grid lines overlay */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(14,165,233,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.5) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
+        <div className="relative container mx-auto px-4 pt-16 pb-24 lg:pt-24 lg:pb-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6 text-center lg:text-left">
+              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-0 px-3 py-1 text-sm font-medium">
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                Mới ra mắt tại Việt Nam
+              </Badge>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: text */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-[#1E293B] border border-[#0EA5E9]/30 rounded-full px-4 py-1.5 mb-6 text-sm text-[#0EA5E9]">
-              <Zap className="w-4 h-4" />
-              <span>Xanh · Êm · Thông minh</span>
-            </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
+                Thuê xe máy điện{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-emerald-500 bg-clip-text text-transparent">
+                  dễ dàng
+                </span>
+                <br />
+                cho mọi chuyến đi
+              </h1>
 
-            <h1
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              THUÊ XE MÁY
-              <br />
-              <span className="text-[#F5A623]">ĐIỆN SỐ 1</span>
-              <br />
-              VIỆT NAM
-            </h1>
+              <p className="text-lg md:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0">
+                BlueVolt — nền tảng cho thuê xe máy điện hàng đầu Việt Nam.
+                Linh hoạt, tiết kiệm và thân thiện môi trường.
+              </p>
 
-            <p className="text-lg text-slate-400 mb-8 max-w-lg leading-relaxed">
-              Đặt xe máy điện chất lượng cao trong 60 giây. Giao tận nơi, bảo
-              hiểm toàn diện, hỗ trợ 24/7 trên khắp 20+ tỉnh thành.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link
-                href="/sign-up"
-                className="flex items-center justify-center gap-2 bg-[#F5A623] hover:bg-[#e09415] text-[#020617] font-bold px-8 py-4 rounded-xl text-lg transition-all hover:scale-105 active:scale-95"
-                style={{ fontFamily: "'Oswald', sans-serif" }}
-              >
-                <Zap className="w-5 h-5" fill="currentColor" />
-                ĐẶT XE NGAY
-              </Link>
-              <Link
-                href="/#how-it-works"
-                className="flex items-center justify-center gap-2 border border-[#1E293B] hover:border-[#F5A623]/50 text-slate-300 hover:text-white px-8 py-4 rounded-xl text-lg transition-all"
-              >
-                Xem cách hoạt động
-                <ChevronRight className="w-5 h-5" />
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {STATS.map((s) => (
-                <div key={s.label} className="text-center">
-                  <div
-                    className="text-2xl font-bold text-[#F5A623]"
-                    style={{ fontFamily: "'Oswald', sans-serif" }}
-                  >
-                    {s.value}
-                  </div>
-                  <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: hero illustration */}
-          <div className="relative flex items-center justify-center">
-            <div className="relative w-full max-w-lg">
-              {/* Glow ring */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1B3A8C]/40 to-[#F5A623]/20 rounded-full blur-2xl scale-110" />
-
-              {/* Motorcycle illustration placeholder */}
-              <div className="relative bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-3xl border border-[#1E293B] p-12 flex flex-col items-center justify-center aspect-square">
-                <div className="w-48 h-48 bg-gradient-to-br from-[#1B3A8C] to-[#0EA5E9] rounded-full flex items-center justify-center mb-4 shadow-2xl shadow-[#0EA5E9]/30">
-                  <Zap className="w-24 h-24 text-[#F5A623]" fill="currentColor" />
-                </div>
-                <div
-                  className="text-2xl font-bold text-white text-center"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-8 h-12"
                 >
-                  BLUEVOLT
-                </div>
-                <div className="text-[#0EA5E9] text-sm mt-1">Electric Mobility</div>
-
-                {/* Floating badge */}
-                <div className="absolute -top-4 -right-4 bg-[#F5A623] text-[#020617] rounded-2xl px-4 py-2 text-sm font-bold shadow-lg">
-                  Đặt nhanh 60s ⚡
-                </div>
-                <div className="absolute -bottom-4 -left-4 bg-[#0F172A] border border-[#0EA5E9]/40 rounded-2xl px-4 py-2 text-sm text-[#0EA5E9] shadow-lg">
-                  🛡️ Bảo hiểm toàn diện
-                </div>
+                  <Link href="/sign-up">
+                    Đặt xe ngay
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-slate-300 hover:bg-slate-50 font-medium px-8 h-12 text-slate-900"
+                >
+                  <Link href="#fleet">Xem các mẫu xe</Link>
+                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" className="py-24 bg-[#0F172A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-block text-[#F5A623] text-sm font-semibold tracking-widest uppercase mb-3">
-              Quy trình
-            </div>
-            <h2
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              ĐẶT XE CHỈ 3 BƯỚC
-            </h2>
-            <p className="text-slate-400 mt-4 max-w-xl mx-auto">
-              Quy trình đơn giản, nhanh chóng — từ lúc chọn xe đến khi nhận xe
-              chỉ mất vài phút.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 relative">
-            {/* Connecting line */}
-            <div className="hidden md:block absolute top-12 left-1/3 right-1/3 h-0.5 bg-gradient-to-r from-[#1B3A8C] via-[#F5A623] to-[#1B3A8C]" />
-
-            {STEPS.map((s, i) => (
-              <div key={i} className="relative text-center group">
-                <div className="relative inline-flex w-24 h-24 items-center justify-center bg-gradient-to-br from-[#1B3A8C] to-[#0EA5E9] rounded-2xl mb-6 shadow-lg shadow-[#1B3A8C]/30 group-hover:scale-110 transition-transform">
-                  <span
-                    className="absolute -top-3 -right-3 w-7 h-7 bg-[#F5A623] text-[#020617] rounded-full text-xs font-bold flex items-center justify-center"
-                    style={{ fontFamily: "'Oswald', sans-serif" }}
-                  >
-                    {s.step}
-                  </span>
-                  <div className="text-white">{s.icon}</div>
-                </div>
-                <h3
-                  className="text-xl font-bold mb-3"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
-                >
-                  {s.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── VEHICLES ── */}
-      <section id="vehicles" className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-block text-[#F5A623] text-sm font-semibold tracking-widest uppercase mb-3">
-              Đội xe
-            </div>
-            <h2
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              XE ĐIỆN CHẤT LƯỢNG CAO
-            </h2>
-            <p className="text-slate-400 mt-4 max-w-xl mx-auto">
-              Đội xe đa dạng, luôn được bảo dưỡng định kỳ và kiểm định nghiêm
-              ngặt trước mỗi chuyến thuê.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {VEHICLES.map((v) => (
-              <div
-                key={v.name}
-                className="group relative bg-[#0F172A] border border-[#1E293B] hover:border-[#F5A623]/40 rounded-2xl overflow-hidden transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#F5A623]/10"
-              >
-                {/* Top gradient bar */}
-                <div className={`h-1 bg-gradient-to-r ${v.gradient}`} />
-
-                {/* Vehicle image area */}
-                <div
-                  className={`bg-gradient-to-br ${v.gradient} h-52 flex items-center justify-center relative`}
-                >
-                  <div className="w-28 h-28 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Zap className="w-14 h-14 text-white" fill="currentColor" />
-                  </div>
-                  <span
-                    className={`absolute top-4 right-4 text-xs font-bold px-3 py-1.5 rounded-full ${v.badgeColor}`}
-                  >
-                    {v.badge}
-                  </span>
-                </div>
-
-                <div className="p-6">
-                  <h3
-                    className="text-xl font-bold mb-1"
-                    style={{ fontFamily: "'Oswald', sans-serif" }}
-                  >
-                    {v.name}
-                  </h3>
-
-                  <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-2xl font-bold text-[#F5A623]">
-                      {v.price}đ
-                    </span>
-                    <span className="text-slate-500 text-sm">/ngày</span>
-                  </div>
-
-                  {/* Specs */}
-                  <div className="grid grid-cols-2 gap-3 mb-5">
-                    <div className="bg-[#1E293B] rounded-lg p-2.5 text-center">
-                      <div className="text-xs text-slate-500 mb-0.5">Tầm xa</div>
-                      <div className="text-sm font-semibold text-[#0EA5E9]">{v.range}</div>
-                    </div>
-                    <div className="bg-[#1E293B] rounded-lg p-2.5 text-center">
-                      <div className="text-xs text-slate-500 mb-0.5">Tốc độ max</div>
-                      <div className="text-sm font-semibold text-[#0EA5E9]">{v.speed}</div>
-                    </div>
-                  </div>
-
-                  {/* Features */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {v.features.map((f) => (
-                      <span
-                        key={f}
-                        className="text-xs bg-[#1E293B] text-slate-400 px-2.5 py-1 rounded-full"
-                      >
-                        {f}
-                      </span>
+              <div className="flex items-center gap-6 pt-6 justify-center lg:justify-start text-sm text-slate-600">
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-emerald-400 border-2 border-white"
+                      />
                     ))}
                   </div>
-
-                  <Link
-                    href="/sign-up"
-                    className="w-full flex items-center justify-center gap-2 bg-[#1B3A8C] hover:bg-[#F5A623] hover:text-[#020617] text-white font-semibold py-3 rounded-xl transition-all text-sm group-hover:bg-[#F5A623] group-hover:text-[#020617]"
-                  >
-                    Thuê ngay
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <span className="font-medium">10.000+ khách hàng</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span className="font-medium ml-1">4.9/5</span>
                 </div>
               </div>
+            </div>
+
+            {/* Hero illustration — bike card */}
+            <div className="relative">
+              <div className="relative bg-white rounded-3xl shadow-2xl p-8 border border-slate-100">
+                <div className="aspect-[4/3] bg-gradient-to-br from-blue-100 to-emerald-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                  <Bike
+                    className="w-40 h-40 text-blue-600/40"
+                    strokeWidth={1.2}
+                  />
+                  <Badge className="absolute top-4 left-4 bg-emerald-500 hover:bg-emerald-500 text-white border-0">
+                    <Zap className="w-3 h-3 mr-1" />
+                    EV
+                  </Badge>
+                  <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5">
+                    <Battery className="w-3.5 h-3.5 text-emerald-500" />
+                    100% pin
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide">
+                      Đề xuất hôm nay
+                    </p>
+                    <p className="text-lg font-bold mt-0.5">VinFast Klara S</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-blue-600">180.000đ</p>
+                    <p className="text-xs text-slate-500">/ ngày</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating stats card */}
+              <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 hidden md:flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Leaf className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">CO₂ tiết kiệm</p>
+                  <p className="text-sm font-bold">~500kg / năm</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Search bar */}
+          <div className="mt-12 lg:mt-16 max-w-4xl mx-auto">
+            <Card className="border-0 shadow-xl bg-white">
+              <CardContent className="p-2 md:p-3">
+                <div className="grid md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors">
+                    <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Input
+                      placeholder="Địa điểm lấy xe"
+                      className="border-0 shadow-none focus-visible:ring-0 px-0 h-auto"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors border-l md:border-l border-slate-100">
+                    <CalendarIcon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Input
+                      placeholder="Ngày nhận"
+                      className="border-0 shadow-none focus-visible:ring-0 px-0 h-auto"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors border-l md:border-l border-slate-100">
+                    <CalendarIcon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <Input
+                      placeholder="Ngày trả"
+                      className="border-0 shadow-none focus-visible:ring-0 px-0 h-auto"
+                    />
+                  </div>
+                  <Button
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-8"
+                  >
+                    <Search className="w-4 h-4 mr-2" />
+                    Tìm xe
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FEATURED VEHICLES ============ */}
+      <section id="fleet" className="py-20 lg:py-28">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0 mb-4">
+              <Bike className="w-3.5 h-3.5 mr-1.5" />
+              Mẫu xe nổi bật
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              Đa dạng xe máy điện
+            </h2>
+            <p className="text-slate-600 text-lg">
+              Từ xe ga phổ thông tới xe máy điện cao cấp, đầy đủ cho mọi nhu cầu
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredVehicles.map((v) => (
+              <Card
+                key={v.id}
+                className="group overflow-hidden border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="relative aspect-[4/3] bg-gradient-to-br from-slate-100 to-blue-100 flex items-center justify-center overflow-hidden">
+                  <Bike
+                    className="w-32 h-32 text-blue-600/30 group-hover:scale-110 transition-transform"
+                    strokeWidth={1.2}
+                  />
+                  <Badge className="absolute top-3 left-3 bg-blue-600 hover:bg-blue-600 text-white border-0">
+                    {v.badge}
+                  </Badge>
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-semibold flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    {v.rating}
+                  </div>
+                </div>
+
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="text-xs text-slate-500 uppercase tracking-wide">
+                        {v.type}
+                      </p>
+                      <h3 className="text-lg font-bold mt-0.5">{v.name}</h3>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-sm text-slate-600 mb-4 pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-1.5">
+                      <Battery className="w-4 h-4 text-blue-600" />
+                      {v.range} km
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Gauge className="w-4 h-4 text-blue-600" />
+                      {v.maxSpeed} km/h
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Wind className="w-4 h-4 text-emerald-600" />
+                      Êm ái
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xl font-bold text-blue-600">
+                        {formatPrice(v.pricePerDay)}đ
+                      </p>
+                      <p className="text-xs text-slate-500">/ ngày</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-500 text-white"
+                    >
+                      Đặt ngay
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
           <div className="text-center mt-10">
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 text-[#0EA5E9] hover:text-[#F5A623] transition-colors font-medium"
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-slate-300 hover:bg-slate-50 text-slate-900"
             >
-              Xem toàn bộ 500+ xe điện
-              <ChevronRight className="w-5 h-5" />
-            </Link>
+              Xem tất cả xe
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* ── WHY US ── */}
-      <section id="why-us" className="py-24 bg-[#0F172A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-block text-[#F5A623] text-sm font-semibold tracking-widest uppercase mb-3">
-              Lợi thế
-            </div>
-            <h2
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              TẠI SAO CHỌN BLUEVOLT?
+      {/* ============ HOW IT WORKS ============ */}
+      <section className="py-20 lg:py-28 bg-slate-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-0 mb-4">
+              Quy trình đơn giản
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              Chỉ 3 bước để bắt đầu
             </h2>
+            <p className="text-slate-600 text-lg">
+              Quy trình thuê xe nhanh gọn, an toàn và minh bạch
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            {steps.map((step, idx) => (
+              <div key={step.title} className="relative">
+                <div className="bg-white rounded-2xl p-8 border border-slate-100 hover:shadow-lg transition-shadow h-full">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                      <step.icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-4xl font-bold text-slate-200">
+                      0{idx + 1}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                  <p className="text-slate-600">{step.desc}</p>
+                </div>
+
+                {idx < steps.length - 1 && (
+                  <ChevronRight className="hidden md:block absolute top-1/2 -right-4 -translate-y-1/2 w-8 h-8 text-slate-300 z-10" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ WHY BLUEVOLT ============ */}
+      <section className="py-20 lg:py-28">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-0 mb-4">
+              Tại sao chọn BlueVolt?
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              Trải nghiệm khác biệt
+            </h2>
+            <p className="text-slate-600 text-lg">
+              Những giá trị BlueVolt mang đến cho mỗi chuyến đi của bạn
+            </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((f, i) => (
-              <div
-                key={i}
-                className="bg-[#020617] border border-[#1E293B] hover:border-[#F5A623]/30 rounded-2xl p-6 group transition-all hover:-translate-y-1"
+            {features.map((f) => (
+              <Card
+                key={f.title}
+                className="border-slate-100 hover:border-slate-200 hover:shadow-md transition-all"
               >
-                <div className="w-14 h-14 bg-[#1E293B] rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#F5A623]/10 transition-colors">
-                  {f.icon}
-                </div>
-                <h3
-                  className="text-lg font-bold mb-2"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
-                >
-                  {f.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
-              </div>
+                <CardContent className="p-6">
+                  <div
+                    className={`w-12 h-12 rounded-xl ${f.bg} flex items-center justify-center mb-4`}
+                  >
+                    <f.icon className={`w-6 h-6 ${f.color}`} />
+                  </div>
+                  <h3 className="text-lg font-bold mb-2">{f.title}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed">
+                    {f.desc}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── REVIEWS ── */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-block text-[#F5A623] text-sm font-semibold tracking-widest uppercase mb-3">
-              Đánh giá
+      {/* ============ CTA BANNER ============ */}
+      <section className="py-16 lg:py-20">
+        <div className="container mx-auto px-4">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-emerald-500 px-8 py-16 lg:px-16 lg:py-20">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
+
+            <div className="relative max-w-3xl mx-auto text-center text-white space-y-6">
+              <Sparkles className="w-12 h-12 mx-auto opacity-90" />
+              <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+                Sẵn sàng cho chuyến đi xanh đầu tiên?
+              </h2>
+              <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+                Đăng ký ngay hôm nay để nhận ưu đãi 20% cho lần thuê xe đầu
+                tiên.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-white text-blue-600 hover:bg-slate-50 font-medium px-8 h-12"
+                >
+                  <Link href="/sign-up">
+                    Đăng ký miễn phí
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="bg-transparent border-white text-white hover:bg-white/10 font-medium px-8 h-12"
+                >
+                  <Link href="/sign-in">Đã có tài khoản?</Link>
+                </Button>
+              </div>
             </div>
-            <h2
-              className="text-4xl sm:text-5xl font-bold"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              KHÁCH HÀNG NÓI GÌ?
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {REVIEWS.map((r) => (
-              <div
-                key={r.name}
-                className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 hover:border-[#F5A623]/30 transition-all"
-              >
-                <div className="flex items-center gap-1 mb-4">
-                  {Array.from({ length: r.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 text-[#F5A623]"
-                      fill="currentColor"
-                    />
-                  ))}
-                </div>
-                <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                  &quot;{r.text}&quot;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1B3A8C] to-[#0EA5E9] flex items-center justify-center text-sm font-bold">
-                    {r.name[0]}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold">{r.name}</div>
-                    <div className="text-xs text-slate-500">{r.location}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA / APP DOWNLOAD ── */}
-      <section className="py-24 bg-gradient-to-br from-[#1B3A8C] via-[#0F172A] to-[#020617] relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#F5A623]/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0EA5E9]/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <div className="w-16 h-16 bg-[#F5A623] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#F5A623]/30">
-            <Zap className="w-9 h-9 text-[#020617]" fill="currentColor" />
-          </div>
-
-          <h2
-            className="text-4xl sm:text-5xl font-bold mb-4"
-            style={{ fontFamily: "'Oswald', sans-serif" }}
-          >
-            SẴN SÀNG TRẢI NGHIỆM
-            <br />
-            <span className="text-[#F5A623]">DI CHUYỂN ĐIỆN?</span>
-          </h2>
-          <p className="text-slate-400 text-lg mb-10 max-w-xl mx-auto">
-            Tải ứng dụng BlueVolt ngay hôm nay và nhận{" "}
-            <span className="text-[#F5A623] font-semibold">50.000đ</span> ưu
-            đãi cho chuyến đầu tiên.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <button className="flex items-center gap-3 bg-white text-black px-6 py-3.5 rounded-xl hover:bg-slate-100 transition-colors">
-              <Smartphone className="w-6 h-6" />
-              <div className="text-left">
-                <div className="text-xs text-slate-500">Tải trên</div>
-                <div className="font-semibold text-sm">App Store</div>
-              </div>
-            </button>
-            <button className="flex items-center gap-3 bg-white text-black px-6 py-3.5 rounded-xl hover:bg-slate-100 transition-colors">
-              <Smartphone className="w-6 h-6" />
-              <div className="text-left">
-                <div className="text-xs text-slate-500">Tải trên</div>
-                <div className="font-semibold text-sm">Google Play</div>
-              </div>
-            </button>
-          </div>
-
-          <Link
-            href="/sign-up"
-            className="inline-flex items-center gap-2 text-[#0EA5E9] hover:text-[#F5A623] transition-colors text-sm"
-          >
-            Hoặc đặt xe trên web
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="bg-[#020617] border-t border-[#1E293B] py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
+      {/* ============ FOOTER ============ */}
+      <footer className="bg-slate-900 text-slate-300">
+        <div className="container mx-auto px-4 py-12 lg:py-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-[#F5A623] rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-[#020617]" fill="currentColor" />
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
                 </div>
-                <span
-                  className="text-xl font-bold"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
-                >
-                  BLUE<span className="text-[#F5A623]">VOLT</span>
+                <span className="text-xl font-bold text-white tracking-tight">
+                  BlueVolt
                 </span>
               </div>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Nền tảng thuê xe máy điện số 1 Việt Nam. Xanh · Êm · Thông
-                minh.
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Nền tảng cho thuê xe máy điện hàng đầu Việt Nam. Di chuyển xanh,
+                an toàn và tiện lợi.
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm tracking-wide uppercase text-slate-300">
-                Dịch vụ
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                {["Thuê xe ngắn hạn", "Thuê xe dài hạn", "Xe cho doanh nghiệp", "Giao xe tận nơi"].map((item) => (
-                  <li key={item}><Link href="/sign-up" className="hover:text-[#F5A623] transition-colors">{item}</Link></li>
-                ))}
+              <h4 className="text-white font-semibold mb-4">Sản phẩm</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="#fleet"
+                    className="hover:text-white transition-colors"
+                  >
+                    Các mẫu xe
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/sign-up"
+                    className="hover:text-white transition-colors"
+                  >
+                    Đặt xe
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Bảng giá
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Trạm sạc
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm tracking-wide uppercase text-slate-300">
-                Công ty
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                {["Về chúng tôi", "Blog", "Tuyển dụng", "Đối tác"].map((item) => (
-                  <li key={item}><Link href="/" className="hover:text-[#F5A623] transition-colors">{item}</Link></li>
-                ))}
+              <h4 className="text-white font-semibold mb-4">Hỗ trợ</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Trung tâm trợ giúp
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Liên hệ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Điều khoản dịch vụ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-white transition-colors">
+                    Chính sách bảo mật
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-sm tracking-wide uppercase text-slate-300">
-                Hỗ trợ
-              </h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                {["Trung tâm trợ giúp", "Liên hệ", "Điều khoản dịch vụ", "Chính sách bảo mật"].map((item) => (
-                  <li key={item}><Link href="/" className="hover:text-[#F5A623] transition-colors">{item}</Link></li>
-                ))}
+              <h4 className="text-white font-semibold mb-4">Liên hệ</h4>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-400" />
+                  <span>Hà Nội, Việt Nam</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Headphones className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-400" />
+                  <span>Hotline: 1900 1234</span>
+                </li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-[#1E293B] pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-slate-600 text-sm">
-              © 2026 BlueVolt. Tất cả quyền được bảo lưu.
+          <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
+            <p>© 2026 BlueVolt. All rights reserved.</p>
+            <p className="flex items-center gap-1.5">
+              Built with <Leaf className="w-4 h-4 text-emerald-500" /> by
+              BlueVolt Team
             </p>
-            <div className="flex items-center gap-2 text-slate-600 text-sm">
-              <Zap className="w-4 h-4 text-[#F5A623]" fill="currentColor" />
-              <span>Powered by clean energy</span>
-            </div>
           </div>
         </div>
       </footer>

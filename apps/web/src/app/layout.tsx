@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className="">
       <body
-        className="bg-[#020617] text-white"
+        className="bg-white text-slate-900"
         style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
       >
         <AuthProvider>
