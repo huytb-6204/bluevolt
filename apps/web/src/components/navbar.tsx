@@ -1,10 +1,11 @@
 "use client";
 
 import React, { type JSX, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
-import { Zap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export function Navbar(): JSX.Element | null {
   const pathname = usePathname();
@@ -20,16 +21,8 @@ export function Navbar(): JSX.Element | null {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#F5A623] rounded-lg flex items-center justify-center">
-              <Zap className="w-5 h-5 text-[#020617]" fill="currentColor" />
-            </div>
-            <span
-              className="text-xl font-bold tracking-wide text-white"
-              style={{ fontFamily: "'Oswald', sans-serif" }}
-            >
-              BLUE<span className="text-[#F5A623]">VOLT</span>
-            </span>
+          <Link href="/" className="flex items-center">
+            <Image src="/logo.jpg" alt="BlueVolt" width={110} height={38} className="object-contain" priority />
           </Link>
 
           {/* Desktop nav links */}

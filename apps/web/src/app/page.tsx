@@ -1,6 +1,7 @@
 "use client";
 
 import React, { type JSX } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Zap,
@@ -217,16 +218,10 @@ export default function LandingPage(): JSX.Element {
               {/* Glow ring */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#1B3A8C]/40 to-[#F5A623]/20 rounded-full blur-2xl scale-110" />
 
-              {/* Motorcycle illustration placeholder */}
+              {/* Hero logo */}
               <div className="relative bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-3xl border border-[#1E293B] p-12 flex flex-col items-center justify-center aspect-square">
-                <div className="w-48 h-48 bg-gradient-to-br from-[#1B3A8C] to-[#0EA5E9] rounded-full flex items-center justify-center mb-4 shadow-2xl shadow-[#0EA5E9]/30">
-                  <Zap className="w-24 h-24 text-[#F5A623]" fill="currentColor" />
-                </div>
-                <div
-                  className="text-2xl font-bold text-white text-center"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
-                >
-                  BLUEVOLT
+                <div className="flex items-center justify-center mb-4">
+                  <Image src="/logo.jpg" alt="BlueVolt" width={240} height={240} className="object-contain rounded-2xl" priority />
                 </div>
                 <div className="text-[#0EA5E9] text-sm mt-1">Electric Mobility</div>
 
@@ -488,8 +483,8 @@ export default function LandingPage(): JSX.Element {
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <div className="w-16 h-16 bg-[#F5A623] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#F5A623]/30">
-            <Zap className="w-9 h-9 text-[#020617]" fill="currentColor" />
+          <div className="flex justify-center mb-6">
+            <Image src="/logo.jpg" alt="BlueVolt" width={80} height={80} className="object-contain rounded-2xl shadow-lg" />
           </div>
 
           <h2
@@ -539,16 +534,8 @@ export default function LandingPage(): JSX.Element {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-[#F5A623] rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-[#020617]" fill="currentColor" />
-                </div>
-                <span
-                  className="text-xl font-bold"
-                  style={{ fontFamily: "'Oswald', sans-serif" }}
-                >
-                  BLUE<span className="text-[#F5A623]">VOLT</span>
-                </span>
+              <div className="mb-4">
+                <Image src="/logo.jpg" alt="BlueVolt" width={100} height={34} className="object-contain rounded-lg" />
               </div>
               <p className="text-slate-500 text-sm leading-relaxed">
                 Nền tảng thuê xe máy điện số 1 Việt Nam. Xanh · Êm · Thông

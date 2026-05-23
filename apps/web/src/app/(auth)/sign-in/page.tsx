@@ -16,7 +16,8 @@ import {
   CardTitle,
 } from "@repo/ui/components/base/card";
 import { Alert, AlertDescription } from "@repo/ui/components/base/alert";
-import { Loader2, Zap, AlertCircle } from "lucide-react";
+import Image from "next/image";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function SignInPage(): JSX.Element {
   const router = useRouter();
@@ -53,13 +54,8 @@ export default function SignInPage(): JSX.Element {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="text-2xl font-bold text-white tracking-tight">
-            BlueVolt
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <Image src="/logo.jpg" alt="BlueVolt" width={160} height={56} className="object-contain" priority />
         </div>
 
         <Card className="border-slate-800 bg-slate-900/80 backdrop-blur-sm shadow-2xl">
