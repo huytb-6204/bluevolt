@@ -1,124 +1,57 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../stores/auth-store";
+import { LoginScreen } from "./LoginScreen";
+import { RegisterScreen } from "./RegisterScreen";
+
+type AuthMode = "login" | "register";
 
 export function AuthScreen() {
-  const { user, isSignedIn, login, register, logout, isLoading } =
-    useAuthStore();
-  const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const { user, isSignedIn, logout } = useAuthStore();
+  const [mode, setMode] = useState<AuthMode>("login");
 
   if (isSignedIn) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>
-          Signed in as {user?.username ?? user?.email}
-        </Text>
+      <View style={styles.signedIn}>
+        <View style={styles.avatarRow}>
+          <View style={styles.avatar}>
+            <Ionicons name="person" size={28} color="#3b82f6" />
+          </View>
+          <View>
+            <Text style={styles.username}>{user?.username ?? user?.email}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
+          </View>
+        </View>
         <TouchableOpacity
-          style={styles.button}
+          style={styles.logoutBtn}
           onPress={() => void logout()}
+          activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Sign Out</Text>
+          <Ionicons name="log-out-outline" size={18} color="#f87171" />
+          <Text style={styles.logoutText}>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  const submit = async () => {
-    setError(null);
-    try {
-      if (mode === "signIn") {
-        await login({ email, password });
-      } else {
-        await register({ email, username, password });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Auth failed");
-    }
-  };
+  if (mode === "login") {
+    return (
+      <LoginScreen onNavigateToRegister={() => setMode("register")} />
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {mode === "signIn" ? "Sign In" : "Sign Up"}
-      </Text>
-      <TextInput
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-      {mode === "signUp" && (
-        <TextInput
-          placeholder="Username"
-          autoCapitalize="none"
-          value={username}
-          onChangeText={setUsername}
-          style={styles.input}
-        />
-      )}
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
-      {error && <Text style={styles.error}>{error}</Text>}
-      <TouchableOpacity
-        style={styles.button}
-        disabled={isLoading}
-        onPress={() => void submit()}
-      >
-        <Text style={styles.buttonText}>
-          {isLoading
-            ? "Working..."
-            : mode === "signIn"
-              ? "Sign In"
-              : "Sign Up"}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => setMode(mode === "signIn" ? "signUp" : "signIn")}
-      >
-        <Text style={styles.toggle}>
-          {mode === "signIn"
-            ? "No account? Sign up"
-            : "Already have an account? Sign in"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <RegisterScreen onNavigateToLogin={() => setMode("login")} />
   );
 }
 
 const styles = StyleSheet.create({
-  container: { width: "100%", gap: 8 },
-  title: { fontSize: 18, fontWeight: "600", marginBottom: 8 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-  },
-  button: {
-    backgroundColor: "#2196F3",
-    padding: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonText: { color: "white", fontWeight: "bold" },
-  error: { color: "red" },
-  toggle: { textAlign: "center", marginTop: 8, color: "#2196F3" },
+  signedIn: { flex: 1, backgroundColor: "#020617", padding: 24, justifyContent: "center", gap: 24 },
+  avatarRow: { flexDirection: "row", alignItems: "center", gap: 16, backgroundColor: "#0f172a", borderWidth: 1, borderColor: "#1e293b", borderRadius: 12, padding: 16 },
+  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#1e3a5f", alignItems: "center", justifyContent: "center" },
+  username: { fontSize: 18, fontWeight: "700", color: "#fff" },
+  email: { fontSize: 13, color: "#64748b", marginTop: 2 },
+  logoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "#1e293b", borderWidth: 1, borderColor: "#334155", borderRadius: 10, paddingVertical: 13 },
+  logoutText: { color: "#f87171", fontSize: 15, fontWeight: "600" },
 });
