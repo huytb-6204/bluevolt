@@ -9,8 +9,8 @@ import { PostHogProvider } from "@/providers/posthog-provider";
 import { Navbar } from "@/components/navbar";
 
 export const metadata: Metadata = {
-  title: "App Template",
-  description: "A web application",
+  title: "BlueVolt — Thuê xe máy điện số 1 Việt Nam",
+  description: "Đặt xe máy điện nhanh 60s, giao tận nơi, bảo hiểm toàn diện. 500+ xe điện chất lượng tại 20+ tỉnh thành.",
 };
 
 export default function RootLayout({
@@ -19,8 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-    <html lang="en" className="">
-      <body className="bg-background-default text-foreground">
+    <html lang="vi" className="">
+      <body
+        className="bg-[#020617] text-white"
+        style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
+      >
         <AuthProvider>
           <PostHogProvider>
             <ReduxProvider>

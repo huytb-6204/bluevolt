@@ -14,9 +14,8 @@ async function bootstrap() {
       process.env.NODE_ENV === "production"
         ? ["error", "warn"]
         : ["error", "warn", "log", "debug", "verbose"],
-    // Improve startup performance
     abortOnError: false,
-    bufferLogs: true,
+    bufferLogs: false,
   });
 
   const logger = new Logger("Bootstrap");
@@ -35,11 +34,13 @@ async function bootstrap() {
 
   // Configure CORS
   app.enableCors({
-    origin: [
-      "http://localhost:3000", // Next.js app
-      "http://localhost:3001", // Backend
-      // Add other origins if needed, potentially from config
-    ],
+    origin: (origin, callback) => {
+      if (!origin || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   });
@@ -69,7 +70,7 @@ async function bootstrap() {
     }
   });
 
-  await app.listen(port, "0.0.0.0");
+  await app.listen(port, "::");
 
   logger.log(
     `🚀 Application is running on: http://localhost:${port}/ and http://${localIp}:${port}/`
