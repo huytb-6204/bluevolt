@@ -22,7 +22,6 @@ import {
   LogOut,
   LayoutDashboard,
   Bike,
-  Headphones,
   Shield,
 } from "lucide-react";
 
@@ -94,23 +93,31 @@ export function Navbar(): JSX.Element | null {
                   <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Tổng quan
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile">
                       <UserIcon className="mr-2 h-4 w-4" />
                       Hồ sơ
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href="/dashboard/trips">
                       <Bike className="mr-2 h-4 w-4" />
                       Chuyến đi của tôi
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Quản trị
-                    </Link>
-                  </DropdownMenuItem>
+                  {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        Quản trị
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={signOut}
@@ -179,21 +186,31 @@ export function Navbar(): JSX.Element | null {
                     </span>
                   </div>
                   <Link
-                    href="/profile"
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    Tổng quan
+                  </Link>
+                  <Link
+                    href="/dashboard/profile"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
                   >
                     <UserIcon className="w-4 h-4" />
                     Hồ sơ
                   </Link>
-                  <Link
-                    href="/admin"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Quản trị
-                  </Link>
+                  {(user?.role === "ADMIN" || user?.role === "SUPERADMIN") && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Quản trị
+                    </Link>
+                  )}
                   <button
                     onClick={() => {
                       setMobileOpen(false);

@@ -8,6 +8,8 @@ import {
   setTokens,
 } from "@/lib/api-client";
 
+export type UserRole = "USER" | "ADMIN" | "SUPERADMIN";
+
 export interface AuthUser {
   id: string;
   email: string;
@@ -15,6 +17,13 @@ export interface AuthUser {
   firstName: string | null;
   lastName: string | null;
   imageUrl: string | null;
+  role: UserRole;
+}
+
+export interface UpdateProfileInput {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
 }
 
 export interface AuthState {
@@ -28,6 +37,12 @@ export interface AuthState {
     username: string;
     password: string;
   }) => Promise<void>;
+  updateProfile: (input: UpdateProfileInput) => Promise<void>;
+  changePassword: (input: {
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
   logout: () => void;
 }
 
@@ -81,6 +96,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+
+  async updateProfile(input) {
+    const { data } = await apiClient.patch<AuthUser>("/auth/me", input);
+    set({ user: data });
+  },
+
+  async changePassword(input) {
+    await apiClient.post("/auth/change-password", input);
+  },
+
+  async uploadAvatar(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const { data } = await apiClient.post<AuthUser>("/auth/avatar", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    set({ user: data });
   },
 
   logout() {
