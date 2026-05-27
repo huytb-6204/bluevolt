@@ -3,10 +3,14 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import bcrypt from "bcryptjs";
 
+export const ROLES = ["USER", "ADMIN", "SUPERADMIN"] as const;
+export type Role = (typeof ROLES)[number];
+
 export interface AccessTokenPayload {
   sub: string;
   email: string;
   username: string;
+  role: Role;
 }
 
 export interface RefreshTokenPayload {

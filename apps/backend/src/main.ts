@@ -6,6 +6,8 @@ import { ConfigService } from "@nestjs/config";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { TRPCService } from "@repo/trpc";
 import * as os from "os";
+import { join } from "path";
+import { mkdirSync } from "fs";
 
 async function bootstrap() {
   // Create the application with minimal logging in production
@@ -44,6 +46,11 @@ async function bootstrap() {
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   });
+
+  // Serve uploaded files (avatars) from /uploads
+  const uploadsDir = join(process.cwd(), "uploads");
+  mkdirSync(join(uploadsDir, "avatars"), { recursive: true });
+  app.useStaticAssets(uploadsDir, { prefix: "/uploads" });
 
   // Apply tRPC middleware
   const trpcService = app.get(TRPCService);
