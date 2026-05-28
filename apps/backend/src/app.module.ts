@@ -10,6 +10,8 @@ import { PostHogModule } from "@repo/analytics";
 import { WebsocketsModule } from "@repo/websockets/server";
 import { HealthModule } from "./health/health.module.js";
 import { UsersModule } from "./users/users.module.js";
+import { VehiclesModule } from "./vehicles/vehicles.module.js";
+import { BookingsModule } from "./bookings/bookings.module.js";
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { UsersModule } from "./users/users.module.js";
     WebsocketsModule,
     HealthModule,
     UsersModule,
+    VehiclesModule,
+    BookingsModule,
   ],
   controllers: [TRPCPanelController],
   providers: [],
