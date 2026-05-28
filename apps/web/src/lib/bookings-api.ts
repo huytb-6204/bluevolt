@@ -66,3 +66,29 @@ export async function cancelBooking(id: string): Promise<Booking> {
 export function formatPrice(value: number): string {
   return new Intl.NumberFormat("vi-VN").format(value) + "đ";
 }
+
+// ---- Admin ----
+
+export interface AdminBooking extends Booking {
+  user: {
+    id: string;
+    email: string;
+    username: string;
+  };
+}
+
+export async function listAllBookingsAdmin(): Promise<AdminBooking[]> {
+  const { data } = await apiClient.get<AdminBooking[]>("/bookings");
+  return data;
+}
+
+export async function setBookingStatus(
+  id: string,
+  status: BookingStatus,
+): Promise<Booking> {
+  const { data } = await apiClient.patch<Booking>(
+    `/bookings/${id}/status`,
+    { status },
+  );
+  return data;
+}
