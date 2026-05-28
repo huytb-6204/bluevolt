@@ -27,7 +27,7 @@ import {
 
 const navLinks = [
   { href: "/", label: "Trang chủ" },
-  { href: "/#fleet", label: "Các mẫu xe" },
+  { href: "/vehicles", label: "Các mẫu xe" },
   { href: "/#how-it-works", label: "Cách thức" },
   { href: "/chat", label: "Hỗ trợ" },
 ];
