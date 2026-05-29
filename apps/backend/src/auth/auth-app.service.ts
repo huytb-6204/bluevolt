@@ -2,11 +2,14 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AuthService, type Role } from "@repo/services";
+import { AuthService, type Role, RedisService } from "@repo/services";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { randomInt } from "crypto";
 
 export interface RegisterInput {
   email: string;
@@ -43,12 +46,19 @@ const PUBLIC_USER_SELECT = {
   createdAt: true,
 } as const;
 
+const OTP_TTL = 10 * 60; // 10 phút
+const OTP_PREFIX = "pwd_reset_otp:";
+const VERIFIED_PREFIX = "pwd_reset_verified:";
+
 @Injectable()
 export class AuthAppService {
+  private readonly logger = new Logger(AuthAppService.name);
+
   constructor(
     private readonly auth: AuthService,
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly redis: RedisService,
   ) {}
 
   async register(input: RegisterInput): Promise<AuthTokens> {
@@ -200,6 +210,73 @@ export class AuthAppService {
       select: PUBLIC_USER_SELECT,
     });
     return user;
+  }
+
+  /** Bước 1: Gửi OTP về email */
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true },
+    });
+
+    // Luôn trả về success để tránh leak email tồn tại hay không
+    if (!user) {
+      return { message: "Nếu email tồn tại, mã OTP đã được gửi." };
+    }
+
+    const otp = String(randomInt(100000, 999999));
+    await this.redis.set(`${OTP_PREFIX}${email}`, otp, OTP_TTL);
+
+    // TODO: Thay bằng email provider thật (Resend, Nodemailer, SendGrid...)
+    // await this.emailService.send({ to: email, subject: "Mã xác nhận", text: `Mã OTP: ${otp}` })
+    this.logger.log(`[DEV] OTP cho ${email}: ${otp}`);
+
+    return { message: "Nếu email tồn tại, mã OTP đã được gửi." };
+  }
+
+  /** Bước 2: Xác minh OTP */
+  async verifyResetCode(
+    email: string,
+    otp: string,
+  ): Promise<{ resetToken: string }> {
+    const stored = await this.redis.get(`${OTP_PREFIX}${email}`);
+    if (!stored || stored !== otp) {
+      throw new BadRequestException("Mã OTP không hợp lệ hoặc đã hết hạn.");
+    }
+
+    // Xoá OTP đã dùng, tạo reset token (UUID) với TTL 15 phút
+    await this.redis.del(`${OTP_PREFIX}${email}`);
+    const resetToken = crypto.randomUUID();
+    await this.redis.set(
+      `${VERIFIED_PREFIX}${resetToken}`,
+      email,
+      15 * 60,
+    );
+
+    return { resetToken };
+  }
+
+  /** Bước 3: Đặt mật khẩu mới */
+  async resetPassword(
+    resetToken: string,
+    newPassword: string,
+  ): Promise<{ success: true }> {
+    const email = await this.redis.get(`${VERIFIED_PREFIX}${resetToken}`);
+    if (!email) {
+      throw new BadRequestException("Token không hợp lệ hoặc đã hết hạn.");
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException("Người dùng không tồn tại.");
+
+    const passwordHash = await this.auth.hashPassword(newPassword);
+    await this.prisma.user.update({
+      where: { email },
+      data: { passwordHash },
+    });
+
+    await this.redis.del(`${VERIFIED_PREFIX}${resetToken}`);
+    return { success: true };
   }
 
   private resolveInitialRole(email: string): Role {

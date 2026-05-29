@@ -39,6 +39,7 @@ export class TRPCService {
         connectTimeout: 500,
       });
     } else {
+      const tls = this.configService.get<string>("REDIS_TLS") === "true";
       this.redis = new Redis({
         host: this.configService.get<string>("REDIS_HOST", "localhost"),
         port: this.configService.get<number>("REDIS_PORT", 6379),
@@ -46,6 +47,7 @@ export class TRPCService {
         maxRetriesPerRequest: 3,
         connectTimeout: 500,
         retryStrategy: (times) => Math.min(times * 50, 2000),
+        ...(tls && { tls: {} }),
       });
     }
 

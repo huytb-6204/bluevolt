@@ -2,4 +2,13 @@ packages:
   - packages/*
   - apps/*
 
-onlyBuiltDependencies: '@prisma/engines,prisma,@prisma/client'
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - 'prisma'
+  - '@prisma/client'
+  - '@clerk/shared'
+  - '@nestjs/core'
+  - '@parcel/watcher'
+  - 'core-js'
+  - 'core-js-pure'
+  - 'unrs-resolver'

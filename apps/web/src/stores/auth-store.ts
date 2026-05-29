@@ -44,6 +44,9 @@ export interface AuthState {
   }) => Promise<void>;
   uploadAvatar: (file: File) => Promise<void>;
   logout: () => void;
+  forgotPassword: (email: string) => Promise<void>;
+  verifyResetCode: (email: string, otp: string) => Promise<string>;
+  resetPassword: (resetToken: string, newPassword: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -119,5 +122,21 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout() {
     clearTokens();
     set({ user: null, isSignedIn: false });
+  },
+
+  async forgotPassword(email) {
+    await apiClient.post("/auth/forgot-password", { email });
+  },
+
+  async verifyResetCode(email, otp) {
+    const { data } = await apiClient.post<{ resetToken: string }>(
+      "/auth/verify-reset-code",
+      { email, otp },
+    );
+    return data.resetToken;
+  },
+
+  async resetPassword(resetToken, newPassword) {
+    await apiClient.post("/auth/reset-password", { resetToken, newPassword });
   },
 }));

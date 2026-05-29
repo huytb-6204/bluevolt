@@ -83,6 +83,28 @@ class ChangePasswordDto {
   newPassword!: string;
 }
 
+class ForgotPasswordDto {
+  @IsEmail()
+  email!: string;
+}
+
+class VerifyResetCodeDto {
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  otp!: string;
+}
+
+class ResetPasswordDto {
+  @IsString()
+  resetToken!: string;
+
+  @IsString()
+  @MinLength(8)
+  newPassword!: string;
+}
+
 // Minimal shape of a multer file (avoids needing @types/multer)
 interface UploadedFileLike {
   filename: string;
@@ -141,6 +163,21 @@ export class AuthController {
       dto.currentPassword,
       dto.newPassword,
     );
+  }
+
+  @Post("forgot-password")
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.service.forgotPassword(dto.email);
+  }
+
+  @Post("verify-reset-code")
+  verifyResetCode(@Body() dto: VerifyResetCodeDto) {
+    return this.service.verifyResetCode(dto.email, dto.otp);
+  }
+
+  @Post("reset-password")
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.service.resetPassword(dto.resetToken, dto.newPassword);
   }
 
   @UseGuards(JwtAuthGuard)
