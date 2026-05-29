@@ -9,6 +9,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { AuthService, type Role, RedisService } from "@repo/services";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { SmsService } from "../sms/sms.service.js";
 import { randomInt } from "crypto";
 
 export interface RegisterInput {
@@ -59,6 +60,7 @@ export class AuthAppService {
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
     private readonly redis: RedisService,
+    private readonly sms: SmsService,
   ) {}
 
   async register(input: RegisterInput): Promise<AuthTokens> {
@@ -83,7 +85,7 @@ export class AuthAppService {
       },
     });
 
-    return this.issueTokens(user.id, user.email, user.username, user.role);
+    return this.issueTokens(user.id, user.email ?? "", user.username ?? "", user.role);
   }
 
   async login(input: LoginInput): Promise<AuthTokens> {
@@ -95,12 +97,12 @@ export class AuthAppService {
     }
     const ok = await this.auth.verifyPassword(
       input.password,
-      user.passwordHash,
+      user.passwordHash ?? "",
     );
     if (!ok) {
       throw new UnauthorizedException("Invalid credentials");
     }
-    return this.issueTokens(user.id, user.email, user.username, user.role);
+    return this.issueTokens(user.id, user.email ?? "", user.username ?? "", user.role);
   }
 
   async refresh(refreshToken: string): Promise<AuthTokens> {
@@ -114,7 +116,7 @@ export class AuthAppService {
     if (!user) {
       throw new UnauthorizedException("User no longer exists");
     }
-    return this.issueTokens(user.id, user.email, user.username, user.role);
+    return this.issueTokens(user.id, user.email ?? "", user.username ?? "", user.role);
   }
 
   async me(userId: string) {
@@ -166,7 +168,7 @@ export class AuthAppService {
     }
     const ok = await this.auth.verifyPassword(
       currentPassword,
-      user.passwordHash,
+      user.passwordHash ?? "",
     );
     if (!ok) {
       throw new BadRequestException("Current password is incorrect");
@@ -210,6 +212,70 @@ export class AuthAppService {
       select: PUBLIC_USER_SELECT,
     });
     return user;
+  }
+
+  // ─── PHONE AUTH ──────────────────────────────────────────────────
+
+  /** Gửi OTP SMS đến số điện thoại */
+  async sendPhoneOtp(phone: string): Promise<{ message: string }> {
+    await this.sms.sendOtp(phone);
+    return { message: "OTP đã được gửi." };
+  }
+
+  /** Xác minh OTP → trả về tokens nếu đã có tài khoản, hoặc setupToken nếu chưa */
+  async verifyPhoneOtp(
+    phone: string,
+    code: string,
+  ): Promise<{ tokens: AuthTokens } | { setupToken: string; isNewUser: true }> {
+    const approved = await this.sms.verifyOtp(phone, code);
+    if (!approved) throw new BadRequestException("Mã OTP không đúng hoặc đã hết hạn.");
+
+    const user = await this.prisma.user.findUnique({
+      where: { phone },
+      select: { id: true, email: true, username: true, role: true, phoneVerified: true },
+    });
+
+    if (user) {
+      // Đã có tài khoản — đăng nhập luôn
+      if (!user.phoneVerified) {
+        await this.prisma.user.update({ where: { phone }, data: { phoneVerified: true } });
+      }
+      const tokens = await this.issueTokens(user.id, user.email ?? "", user.username ?? "", user.role);
+      return { tokens };
+    }
+
+    // Chưa có tài khoản — tạo setupToken để hoàn tất đăng ký
+    const setupToken = crypto.randomUUID();
+    await this.redis.set(`phone_setup:${setupToken}`, phone, 15 * 60);
+    return { setupToken, isNewUser: true as const };
+  }
+
+  /** Hoàn tất đăng ký sau khi verify SĐT */
+  async completePhoneRegister(
+    setupToken: string,
+    input: { password: string; firstName?: string; lastName?: string },
+  ): Promise<AuthTokens> {
+    const phone = await this.redis.get(`phone_setup:${setupToken}`);
+    if (!phone) throw new BadRequestException("Phiên đăng ký đã hết hạn. Vui lòng thử lại.");
+
+    const existing = await this.prisma.user.findUnique({ where: { phone }, select: { id: true } });
+    if (existing) throw new ConflictException("Số điện thoại đã được đăng ký.");
+
+    const passwordHash = await this.auth.hashPassword(input.password);
+    const role = this.resolveInitialRole(phone);
+    const user = await this.prisma.user.create({
+      data: {
+        phone,
+        phoneVerified: true,
+        passwordHash,
+        firstName: input.firstName ?? null,
+        lastName: input.lastName ?? null,
+        role,
+      },
+    });
+
+    await this.redis.del(`phone_setup:${setupToken}`);
+    return this.issueTokens(user.id, user.email ?? "", user.username ?? "", user.role);
   }
 
   /** Bước 1: Gửi OTP về email */

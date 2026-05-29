@@ -47,6 +47,9 @@ export interface AuthState {
   forgotPassword: (email: string) => Promise<void>;
   verifyResetCode: (email: string, otp: string) => Promise<string>;
   resetPassword: (resetToken: string, newPassword: string) => Promise<void>;
+  sendPhoneOtp: (phone: string) => Promise<void>;
+  verifyPhoneOtp: (phone: string, code: string) => Promise<{ tokens: { accessToken: string; refreshToken: string } } | { setupToken: string; isNewUser: true }>;
+  completePhoneRegister: (setupToken: string, input: { password: string; firstName?: string; lastName?: string }) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -138,5 +141,29 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   async resetPassword(resetToken, newPassword) {
     await apiClient.post("/auth/reset-password", { resetToken, newPassword });
+  },
+
+  async sendPhoneOtp(phone) {
+    await apiClient.post("/auth/phone/send-otp", { phone });
+  },
+
+  async verifyPhoneOtp(phone, code) {
+    const { data } = await apiClient.post("/auth/phone/verify-otp", { phone, code });
+    if ("tokens" in data) {
+      setTokens(data.tokens);
+      const { data: me } = await apiClient.get<AuthUser>("/auth/me");
+      set({ user: me, isSignedIn: true });
+    }
+    return data;
+  },
+
+  async completePhoneRegister(setupToken, input) {
+    const { data } = await apiClient.post<{ accessToken: string; refreshToken: string }>(
+      "/auth/phone/complete-register",
+      { setupToken, ...input },
+    );
+    setTokens(data);
+    const { data: me } = await apiClient.get<AuthUser>("/auth/me");
+    set({ user: me, isSignedIn: true });
   },
 }));

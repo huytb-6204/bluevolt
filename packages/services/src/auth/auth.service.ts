@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import bcrypt from "bcryptjs";
 
-export const ROLES = ["USER", "ADMIN", "SUPERADMIN"] as const;
+export const ROLES = ["USER", "ADMIN", "SUPERADMIN", "OWNER", "STAFF", "FLEET_OWNER"] as const;
 export type Role = (typeof ROLES)[number];
 
 export interface AccessTokenPayload {

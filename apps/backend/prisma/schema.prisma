@@ -1,5 +1,3 @@
-// Prisma schema migrated from packages/db TypeORM entities.
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -10,10 +8,111 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String     @id @default(uuid()) @db.Uuid
+  phone         String?    @unique @db.VarChar(20)
+  phoneVerified Boolean    @default(false) @map("phone_verified")
+  username      String?    @unique @db.VarChar(50)
+  email         String?    @unique @db.VarChar(255)
+  passwordHash  String?    @map("password_hash") @db.VarChar(255)
+  firstName     String?    @map("first_name") @db.VarChar(100)
+  lastName      String?    @map("last_name") @db.VarChar(100)
+  imageUrl      String?    @map("image_url")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  role          Role       @default(USER)
+  bookings      Booking[]
+  userItems     UserItem[]
+  vehicles      Vehicle[]
+
+  @@map("users")
+}
+
+model Vehicle {
+  id          String        @id @default(uuid()) @db.Uuid
+  name        String        @db.VarChar(100)
+  type        VehicleType   @default(MOTORBIKE)
+  description String?
+  pricePerDay Int           @map("price_per_day")
+  rangeKm     Int           @map("range_km")
+  maxSpeed    Int           @map("max_speed")
+  imageUrl    String?       @map("image_url")
+  status      VehicleStatus @default(AVAILABLE)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  owner_id    String?       @db.Uuid
+  bookings    Booking[]
+  users       User?         @relation(fields: [owner_id], references: [id])
+
+  @@index([owner_id])
+  @@map("vehicles")
+}
+
+model Booking {
+  id         String        @id @default(uuid()) @db.Uuid
+  userId     String        @map("user_id") @db.Uuid
+  vehicleId  String        @map("vehicle_id") @db.Uuid
+  startDate  DateTime      @map("start_date") @db.Date
+  endDate    DateTime      @map("end_date") @db.Date
+  days       Int
+  totalPrice Int           @map("total_price")
+  status     BookingStatus @default(CONFIRMED)
+  note       String?
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle       @relation(fields: [vehicleId], references: [id])
+
+  @@index([userId])
+  @@index([vehicleId])
+  @@map("bookings")
+}
+
+model Item {
+  id                  String     @id @default(uuid()) @db.Uuid
+  status              ItemStatus @default(pending)
+  exampleNumericField Int        @default(0) @map("example_numeric_field")
+  exampleStringField  String?    @map("example_string_field") @db.VarChar
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+  userItems           UserItem[]
+
+  @@map("items")
+}
+
+model UserItem {
+  id                String   @id @default(uuid()) @db.Uuid
+  itemId            String   @map("item_id") @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  userSpecificValue String?  @map("user_specific_value") @db.VarChar
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  item              Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_items")
+}
+
+model ItemDetail {
+  id          String      @id @default(uuid()) @db.Uuid
+  description String
+  tags        String[]
+  detailValue Int?        @map("detail_value")
+  level       DetailLevel @default(intermediate)
+  category    String?     @db.VarChar
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("item_details")
+}
+
 enum Role {
   USER
   ADMIN
   SUPERADMIN
+  OWNER
+  STAFF
+  FLEET_OWNER
 }
 
 enum VehicleType {
@@ -47,101 +146,4 @@ enum DetailLevel {
   basic
   intermediate
   advanced
-}
-
-model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  username     String   @unique @db.VarChar(50)
-  email        String   @unique @db.VarChar(255)
-  passwordHash String   @map("password_hash") @db.VarChar(255)
-  firstName    String?  @map("first_name") @db.VarChar(100)
-  lastName     String?  @map("last_name") @db.VarChar(100)
-  imageUrl     String?  @map("image_url")
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  userItems UserItem[]
-  bookings  Booking[]
-
-  @@map("users")
-}
-
-model Vehicle {
-  id          String        @id @default(uuid()) @db.Uuid
-  name        String        @db.VarChar(100)
-  type        VehicleType   @default(MOTORBIKE)
-  description String?       @db.Text
-  pricePerDay Int           @map("price_per_day") // VND / day
-  rangeKm     Int           @map("range_km") // km per full charge
-  maxSpeed    Int           @map("max_speed") // km/h
-  imageUrl    String?       @map("image_url")
-  status      VehicleStatus @default(AVAILABLE)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-
-  bookings Booking[]
-
-  @@map("vehicles")
-}
-
-model Booking {
-  id         String        @id @default(uuid()) @db.Uuid
-  userId     String        @map("user_id") @db.Uuid
-  vehicleId  String        @map("vehicle_id") @db.Uuid
-  startDate  DateTime      @map("start_date") @db.Date
-  endDate    DateTime      @map("end_date") @db.Date
-  days       Int
-  totalPrice Int           @map("total_price")
-  status     BookingStatus @default(CONFIRMED)
-  note       String?       @db.Text
-  createdAt  DateTime      @default(now()) @map("created_at")
-  updatedAt  DateTime      @updatedAt @map("updated_at")
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
-
-  @@index([userId])
-  @@index([vehicleId])
-  @@map("bookings")
-}
-
-model Item {
-  id                  String     @id @default(uuid()) @db.Uuid
-  status              ItemStatus @default(pending)
-  exampleNumericField Int        @default(0) @map("example_numeric_field")
-  exampleStringField  String?    @map("example_string_field") @db.VarChar
-  createdAt           DateTime   @default(now()) @map("created_at")
-  updatedAt           DateTime   @updatedAt @map("updated_at")
-
-  userItems UserItem[]
-
-  @@map("items")
-}
-
-model UserItem {
-  id                String   @id @default(uuid()) @db.Uuid
-  itemId            String   @map("item_id") @db.Uuid
-  userId            String   @map("user_id") @db.Uuid
-  userSpecificValue String?  @map("user_specific_value") @db.VarChar
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-
-  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_items")
-}
-
-model ItemDetail {
-  id          String      @id @default(uuid()) @db.Uuid
-  description String      @db.Text
-  tags        String[]
-  detailValue Int?        @map("detail_value")
-  level       DetailLevel @default(intermediate)
-  category    String?     @db.VarChar
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-
-  @@map("item_details")
 }

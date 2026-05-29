@@ -83,6 +83,36 @@ class ChangePasswordDto {
   newPassword!: string;
 }
 
+class SendPhoneOtpDto {
+  @IsString()
+  phone!: string;
+}
+
+class VerifyPhoneOtpDto {
+  @IsString()
+  phone!: string;
+
+  @IsString()
+  code!: string;
+}
+
+class CompletePhoneRegisterDto {
+  @IsString()
+  setupToken!: string;
+
+  @IsString()
+  @MinLength(8)
+  password!: string;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+}
+
 class ForgotPasswordDto {
   @IsEmail()
   email!: string;
@@ -163,6 +193,27 @@ export class AuthController {
       dto.currentPassword,
       dto.newPassword,
     );
+  }
+
+  // ─── PHONE AUTH ──────────────────────────────────────────────────
+
+  @Post("phone/send-otp")
+  sendPhoneOtp(@Body() dto: SendPhoneOtpDto) {
+    return this.service.sendPhoneOtp(dto.phone);
+  }
+
+  @Post("phone/verify-otp")
+  verifyPhoneOtp(@Body() dto: VerifyPhoneOtpDto) {
+    return this.service.verifyPhoneOtp(dto.phone, dto.code);
+  }
+
+  @Post("phone/complete-register")
+  completePhoneRegister(@Body() dto: CompletePhoneRegisterDto) {
+    return this.service.completePhoneRegister(dto.setupToken, {
+      password: dto.password,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+    });
   }
 
   @Post("forgot-password")

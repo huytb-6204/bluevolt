@@ -149,6 +149,25 @@ export default function SignInPage(): JSX.Element {
                 )}
               </Button>
 
+              <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-white px-2 text-slate-400">hoặc</span>
+                </div>
+              </div>
+
+              <Link href="/phone-auth" className="w-full">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-11 border-slate-300 font-medium"
+                >
+                  📱 Đăng nhập bằng số điện thoại
+                </Button>
+              </Link>
+
               <p className="text-sm text-slate-500 text-center">
                 Chưa có tài khoản?{" "}
                 <Link
